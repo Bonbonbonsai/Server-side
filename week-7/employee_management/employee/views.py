@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from .models import Employee, Position, Project
-from django.db.models import Count
+from django.db.models import Count, Value
+from django.db.models.functions import Concat
+import json
 
 # Create your views here.
 class EmployeeView(View):
@@ -35,7 +37,23 @@ class ProjectView(View):
 
 class ProjectDetailView(View):
     def get(self, request, num):
-        collect_path = Project.objects.filter(id=num)
+        project = Project.objects.annotate(manager_full_name=Concat("manager__first_name", Value(' '), "manager__last_name")).get(id=num)
+        employee_in_this_project = Employee.objects.filter(project__id=num)
         return render(request, "project_detail.html", {
-            "selected_project": collect_path
+            "project": project,
+            "employee_in_this_project": employee_in_this_project
         })
+
+    def put(self, request, num):
+        data = json.loads(request.body).get('emp_id')
+        project = Project.objects.get(id=num)
+        employee = Employee.objects.get(id=data)
+        if employee not in project.staff.all():
+            project.staff.add(employee)
+        return JsonResponse({'status': 'ok'}, status=200)
+    
+    def delete(self, request, num, emp_id):
+        project = Project.objects.get(id=num)
+        employee = Employee.objects.get(id=emp_id)
+        project.staff.remove(employee)
+        return JsonResponse({'status': 'ok'}, status=200)

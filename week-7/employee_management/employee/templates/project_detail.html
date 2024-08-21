@@ -85,34 +85,27 @@
 
                 <label for="">Project Name</label>
                 <!-- กำหนด value เป็นชื่อ โปรเจค -->
-                <input type="text" placeholder="project name" value="{{selected_project.name}}">
-                
+                <input type="text" placeholder="project name" value="{{ project.name }}">
+
                 <label for="">Description</label>
                 <!-- รายละเอียกของโปรเจค -->
-                <textarea placeholder="description" rows="4"> {{selected_project.description}} </textarea>
+                <textarea placeholder="description" rows="4"> {{project.description}} </textarea>
 
                 <!-- 
                     start_date และ due_date ต้องจัดให้อยู่ในรูปแบบ %Y-%m-%d โดยใช้ strftime ใน view ก่อนนำมาใช้
                     แนะนำให้ส่งแยก key
                 -->
                 <label for="">Start Date</label>
-                <input 
-                    type="date" placeholder="start-date"
-                    style="width: 150px;" 
-                    value="{{ selected_project.start_date }}" 
-                >
+                <input type="date" placeholder="start-date" style="width: 150px;"
+                    value="{{ project.start_date|date:'Y-m-d' }}">
                 <label for="">Due Date</label>
-                <input 
-                    type="date" 
-                    placeholder="due-date" 
-                    style="width: 150px;" 
-                    value="{{ selected_project.due_date }}"
-                >
+                <input type="date" placeholder="due-date" style="width: 150px;"
+                    value="{{ project.due_date|date:'Y-m-d' }}">
 
                 <label for="">Project Manager</label>
                 <select style="width: 320px; height: 30px;">
                     <!-- กำหนด value เป็น id ของ manager และแสดงชื่อเต็มของ manager -->
-                    <option value=""></option>
+                    <option value="{{ project.manager__id }}"> {{project.manager_full_name}} </option>
                 </select>
             </form>
         </div>
@@ -131,63 +124,66 @@
                     </div>
                 </div>
             </div>
+            {% for emp in employee_in_this_project %}
             <div class="itemGroup">
                 <div class="item">
                     <!-- id ของพนักงาน ชื่อ นามสกุล -->
-                    <div>ID. Full Name</div>
+                    <div>{{ emp.id }} {{ emp.first_name }} {{emp.last_name}}</div>
 
                     <!-- position name -->
-                    <div>Position</div>
+                    <div>{{ emp.position.name }}</div>
                     <div class="action">
 
                         <!-- function removeStaff ให้ส่ง id ของพนักงาน เช่น removeStaff(Number('{{ staff.id }}'))-->
-                        <button type="submit" class="delete" onclick="removeStaff()">Kick this Staff</button>
+                        <button type="submit" class="delete" onclick="removeStaff(Number('{{ emp.id }}'))">Kick this Staff</button>
 
                     </div>
                 </div>
-
             </div>
+            {% endfor %}
 
         </div>
     </main>
 </body>
 <script>
-    function addStaff(){
+    function addStaff() {
         const emp = document.getElementById('input-add-staff');
         const emp_id = emp.value;
-        
+
         // กำหนด path ให้ถูกต้อง
-        fetch(`/api/example/{{project.id}}/${emp_id}/`, {
+        fetch(`{% url 'addUser' project.id %}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
-            }
+            },
+            body: JSON.stringify({ emp_id })
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Item updated successfully')
-            window.location.reload()
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => {
+                console.log('Item updated successfully')
+                window.location.reload()
+            })
+            .catch(error => console.error('Error:', error));
     }
 
-    async function removeStaff(emp_id){
+    async function removeStaff(emp_id) {
 
         // กำหนด path ให้ถูกต้อง
-        fetch(`/api/example/{{project.id}}/${emp_id}/`, {
+        fetch(`/project/detail/{{ project.id }}/remove-user/${emp_id}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
             },
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Item updated successfully')
-            window.location.reload()
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => {
+                console.log('Item updated successfully')
+                window.location.reload()
+            })
+            .catch(error => console.error('Error:', error));
     }
 </script>
+
 </html>
