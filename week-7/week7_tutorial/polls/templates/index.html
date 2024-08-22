@@ -1,20 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>main</title>
-</head>
-<body>
-    <h1>All questions ({{num}})</h1>
-    {% if latest %}
-        <ul>
-        {% for question in latest %}
-            <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
-        {% endfor %}
-        </ul>
+{% extends 'base.html' %}
+
+{% block title_page %}Question List{% endblock %}
+
+{% block header %}All questions{% endblock %}
+
+{% block content %}
+    {% if question_list %} {# {% ??? %} template tag #}  {# {{% ??? %}} แสดงค่าตัวแปร #}
+    <ul>
+    {% for question in question_list %} {# question.question_text|??? คือการ filter ตัวแปรที่เราดึงมา #}
+    <li><a href="{% url 'detail' question.id %}">{{ question.question_text|truncatechars:40 }}</a>
+        - Published date: {{question.pub_date|date:"D d, M y"}}</li>
+    {% endfor %}
+    </ul>
     {% else %}
-        <p>No polls are available.</p>
+    <p>No polls are available.</p>
     {% endif %}
-</body>
-</html>
+{% endblock %}
+
+{% block footer %}
+<p class="subtitle">
+    Total: {{question_list|length}} questions <!-- ใช้ filter length เพื่อแสดงขนาดของ list question_list -->
+</p>
+{% endblock %}
