@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %} Project {% endblock %}
+
+{% block content %}
+<main>
+    <div class="head">
+        <h1>Project</h1>
+    </div>
+
+    {% for project in projects %}
+    <div class="itemGroup">
+        
+        <div class="item">
+            <!-- โปรเจค id และ ชื่อ -->
+            <div>{{project.id}}. {{project.name}}</div>
+
+            <!-- วันเริ่ม และ วันกำหนดส่งโปรเจค -->
+            <div>{{project.start_date}} - {{project.due_date}}</div>
+
+            <div class="action">
+                <!-- กำหนด path ให้ถูกต้อง -->
+                <a href="{% url 'detail' project.id %}" class="edit btn">แก้ไข</a>
+                
+                <!-- ถ้า code มันแจ้งเตือนอะไรก็ปล่อยไปนะครับไม่มีผลอะไร  -->
+                <button type="submit" onclick="deleteProject({{ project.id }}, '{{ csrf_token }}')" class="delete">Delete</button>
+            </div>
+        </div>
+        
+    </div>
+    {% endfor %}
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'project.js' %}"></script>
+{% endblock %}
