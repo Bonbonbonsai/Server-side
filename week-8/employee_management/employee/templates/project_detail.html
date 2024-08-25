@@ -47,7 +47,7 @@
             <div class="action">
                 <div id="add-staff">
                     <input type="text" name="emp_id" id="input-add-staff" placeholder="EMPLOYEE ID">
-                    <button type="submit" onclick="addStaff('{{ project.id }}, {{ csrf_token }}')">ADD</button>
+                    <button type="submit" onclick="addStaff({{ project.id }}, '{{ csrf_token }}')">ADD</button>
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                 <div class="action">
 
                     <!-- function removeStaff ให้ส่ง id ของพนักงาน เช่น removeStaff(Number('{{ staff.id }}'))-->
-                    <button type="submit" class="delete" onclick="removeStaff({{ project.id }}, Number('{{ emp.id }}'), '{{ csrf_token }}')">Kick this Staff</button>
+                    <button type="submit" class="delete" onclick="removeStaff({{ project.id }}, {{ emp.id }}, '{{ csrf_token }}')">Kick this Staff</button>
 
                 </div>
             </div>

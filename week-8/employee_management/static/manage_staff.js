@@ -2,7 +2,7 @@ function addStaff(pro_id, csrf_token){
     const emp = document.getElementById('input-add-staff');
     const emp_id = emp.value;
 
-    fetch(`{% url 'addUser' ${pro_id} %}`, {
+    fetch(`/project/detail/${pro_id}/add-user/`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
