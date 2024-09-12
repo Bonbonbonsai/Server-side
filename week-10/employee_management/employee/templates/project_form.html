@@ -2,15 +2,13 @@
 
 {% block title%} Create Project {% endblock %}
 
-{% block head%}
-<h1>Form Project</h1>
-{% endblock %}
-
 {% block content %}
+<h1>Form Project</h1>
 <div class="emp-form-box">
   <form method="post">
     {% csrf_token %}
       <!-- เรียกใช้ form -->
+       {{ form }}
     <button type="submit">Save</button>
   </form>
 </div>

@@ -4,7 +4,7 @@ from django.views import View
 from .models import Employee, Position, Project
 from django.db.models import Count, Value
 from django.db.models.functions import Concat
-from .forms import EmployeeForm
+from .forms import EmployeeForm, ProjectForm
 import json
 
 # Create your views here.
@@ -62,6 +62,7 @@ class FormEmployeeView(View):
     def get(self, request):
         form = EmployeeForm()
         return render(request, "employee_form.html", {"form": form})
+    '''
     def post(self, request):
         form = EmployeeForm(request.POST)
         if form.is_valid():
@@ -85,3 +86,33 @@ class FormEmployeeView(View):
             new_emp.save()
 
         return HttpResponseRedirect('/employee/')
+    '''
+    def post(self, request):
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/employee/')
+        else:
+            return render(request, "employee_form.html", {"form": form})
+        
+class FormProjectView(View):
+    def get(self, request):
+        form = ProjectForm()
+        return render(request, 'project_form.html', {'form': form})
+
+    def post(self, request):
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/project/')
+        else:
+            return render(request, 'project_form.html', {'form': form})
+        
+class EditProject(View):
+    def get(self, request):
+        project = Project.objects.annotate(manager_full_name=Concat("manager__first_name", Value(' '), "manager__last_name")).get(id=num)
+        employee_in_this_project = Employee.objects.filter(project__id=num)
+        return render(request, "project_detail.html", {
+            "project": project,
+            "employee_in_this_project": employee_in_this_project
+        })
