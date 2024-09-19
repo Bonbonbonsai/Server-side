@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views import View
-from .models import Employee, Position, Project
+from .models import Employee, Project, EmployeeAddress
 from django.db.models import Count, Value
 from django.db.models.functions import Concat
 from .forms import EmployeeForm, ProjectForm
+from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 import json
 
 # Create your views here.
@@ -15,13 +17,6 @@ class EmployeeView(View):
         return render(request, "employee.html", {
             "employees": employees,
             "employee_total": employee_count
-        })
-
-class PositionView(View):
-    def get(self, request):
-        positions = Position.objects.all().annotate(emp_count=Count("employee")).order_by("id")
-        return render(request, "position.html", {
-            "positions": positions,
         })
     
 class ProjectView(View):
@@ -90,8 +85,28 @@ class FormEmployeeView(View):
     def post(self, request):
         form = EmployeeForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/employee/')
+            try:
+                with transaction.atomic():
+                    # save ข้อมูล employee
+                    employee = form.save()
+
+                    # save ข้อมูล address ของ employee
+                    location = form.cleaned_data["location"]
+                    district = form.cleaned_data["district"]
+                    province = form.cleaned_data["province"]
+                    postal_code = form.cleaned_data["postal_code"]
+                    address = EmployeeAddress(
+                        employee=employee,
+                        location=location,
+                        district=district,
+                        province=province,
+                        postal_code=postal_code
+                    )
+                    address.save()
+            except ObjectDoesNotExist:
+                print("Save unsucessfully.")
+
+            return redirect('employee')
         else:
             return render(request, "employee_form.html", {"form": form})
         
@@ -110,7 +125,7 @@ class FormProjectView(View):
         
 class EditProject(View):
     def get(self, request):
-        project = Project.objects.annotate(manager_full_name=Concat("manager__first_name", Value(' '), "manager__last_name")).get(id=num)
+        project = Project.objects.annotate(manager_full_name=Concat("manager__first_name", Value(' '), "manager__last_name"))
         employee_in_this_project = Employee.objects.filter(project__id=num)
         return render(request, "project_detail.html", {
             "project": project,

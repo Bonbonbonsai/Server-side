@@ -22,6 +22,8 @@ Employee
       <th>Salary</th>
       <th>Department</th>
       <th>Position</th>
+      <th>Location</th>
+      <th>Province</th>
     </tr>
   </thead>
 
@@ -42,6 +44,8 @@ Employee
         <td>{{ employee.position.department.name}}</td>
         <!-- ตำแหน่งงาน -->
         <td>{{ employee.position.name }}</td>
+        <td>{{ employee.employeeaddress.location }}</td>
+        <td>{{ employee.employeeaddress.province }}</td>
     </tr>
     {% endfor %}
 </tbody>

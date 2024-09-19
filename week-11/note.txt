@@ -1,0 +1,31 @@
+### TRANSACTION ###
+
+Table name: Account
+Attribute: arc_no, owner, amount
+
+โอนจาก A -> B
+ฺBEGIN TRANSACTION <--------------
+1. SELECT * FORM    [A]         |
+2. UPDATE           [A] เพิ่ม     |     
+--------------------crash!!!-----
+3. SELECT           [B]
+4. UPDATE           [B] ลด
+    COMMIT
+
+*** ถ้าข้อมูลเกิด crash ระหว่างทางให้ rollback กลับไปตอนเริ่มต้น (Atomicity - All or Nothing)
+*** สามารถเซต save point ได้ เวลา rollback ก็จะกลับไปที่จุดที่เรา save ไว้
+
+*** Isolation ถ้ามี TRANSACTION ที่ 1 ดำเนินการอยู่ TRANSACTION ที่ 2 ต้องรอ TRANSACTION ที่ 1 COMMIT หรือ rollback ก่อน TRANSACTION ที่ 2 ถึงจะดำเนินการได้
+
+*** @transaction.atomic จะบอกว่า function นี้เป็น transaction เดียวกันหมด
+
+    @transaction.atomic
+    def viewfunc(request):
+    # This code executes inside a transaction.
+    do_stuff()
+
+*** on_commit() คือ หลังจาก commit แล้วให้ทำอะไร
+_______________________________________________________
+
+### Mutiple databases ###
+Rounting ตัว django จะ rount ไปยัง table ที่เหมาะสม ให้เลยอัตโนมัติ

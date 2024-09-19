@@ -38,11 +38,6 @@ class EmployeeForm(ModelForm):
     birth_date = forms.DateField(label="Birth date:", widget=forms.DateInput(attrs={"type" :"date"}))
     hire_date = forms.DateField(label="Hire date:", widget=forms.DateInput(attrs={"type" :"date"}))
     salary = forms.DecimalField(label="Salary:", max_digits=10, decimal_places=2, initial=0)
-    position = forms.ModelChoiceField(
-        label="Position:",
-        queryset=Position.objects.all(),
-        required=True
-    )
     location = forms.CharField(widget=forms.TextInput(attrs={"cols": 30, "rows": 3}))
     district = forms.CharField(max_length=100)
     province = forms.CharField(max_length=100)
@@ -57,7 +52,6 @@ class EmployeeForm(ModelForm):
             "birth_date", 
             "hire_date", 
             "salary", 
-            "position",
             "location",
             "district",
             "province",
