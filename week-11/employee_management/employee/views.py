@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views import View
 from .models import Employee, Project, EmployeeAddress
+from company.models import Position
 from django.db.models import Count, Value
 from django.db.models.functions import Concat
 from .forms import EmployeeForm, ProjectForm
@@ -13,6 +14,8 @@ import json
 class EmployeeView(View):
     def get(self, request):
         employees = Employee.objects.all().order_by("-hire_date")
+        for employee in employees:
+            employee.position = Position.objects.get(pk=employee.position_id)
         employee_count = Employee.objects.all().count()
         return render(request, "employee.html", {
             "employees": employees,

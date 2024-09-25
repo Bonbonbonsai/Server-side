@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from .models import *
+from company.models import Position
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
@@ -38,6 +39,11 @@ class EmployeeForm(ModelForm):
     birth_date = forms.DateField(label="Birth date:", widget=forms.DateInput(attrs={"type" :"date"}))
     hire_date = forms.DateField(label="Hire date:", widget=forms.DateInput(attrs={"type" :"date"}))
     salary = forms.DecimalField(label="Salary:", max_digits=10, decimal_places=2, initial=0)
+    position_id = forms.ModelChoiceField(
+        label="Position:",
+        queryset=Position.objects.using("db2").all(),
+        required=True
+    )
     location = forms.CharField(widget=forms.TextInput(attrs={"cols": 30, "rows": 3}))
     district = forms.CharField(max_length=100)
     province = forms.CharField(max_length=100)
@@ -52,6 +58,7 @@ class EmployeeForm(ModelForm):
             "birth_date", 
             "hire_date", 
             "salary", 
+            "position_id",
             "location",
             "district",
             "province",
@@ -65,10 +72,13 @@ class EmployeeForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         hire_date = cleaned_data.get("hire_date")
+        position = cleaned_data.get("position_id")
+
+        cleaned_data["position_id"] = position.id
+        return cleaned_data
 
         if hire_date > datetime.now().date():
             self.add_error("hire_date", "Hire date cannot be in the future.")
-
         return cleaned_data
 
 class ProjectForm(ModelForm):
