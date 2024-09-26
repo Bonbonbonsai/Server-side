@@ -1,0 +1,15 @@
+Authorization & Authentication
+
+Authentication คือ ยืนยันตัวตรผ่านการ login หรือ logout
+login ต้องใส่ username กับ password
+เว็บจะรู้แล้วว่าเราเป็นใคร
+
+Authorization คือ หลังจาก login เข้ามาแล้วเราทำอะไรได้บ้าง อยู่ตำแหน่งไหน เช่น
+นาย a -> Admin
+นาย b -> Viewer
+
+Authorization มี 2 ระดับ
+1. นาย A อยู่ใน group ไหน ซึ่งจะ group สามารถผูก permission ได้ หรือจะผูก permission ไปที่นาย A ตรงๆ เลยก็ได้
+
+จะอ้างอิงถึง permission ต้องใช้ codename
+
