@@ -1,0 +1,19 @@
+API
+- Request
+- Endpoint
+- Response
+
+CRUD
+GET /bookings/   เป็นการ get แบบ list
+POST /bookings/
+PUT /bookings/<id>/
+DELETE /bookings/<id>/
+GET /bookings/<id>/ เป็นการ get แบบ detail
+
+HTTP Status code
+4-- มักจะเป็นความผิดของฝั่ง client
+5-- มักจะเป็นความผิดของฝั่ง server
+
+Serializer
+deserialize - ขาเข้า | แปลงจาก JSON --> Dic ของ python
+serialize - ขาออก | แปลงจาก object ที่สร้างขึ้น --> Dic ของ python --> JSON

@@ -1,6 +1,8 @@
 from django.urls import path
+from appointments import views
 
 urlpatterns = [
-    path('doctors/', DoctorList.as_view(), name='doctor-list'),
-    path('patients/', PatientList.as_view(), name='patient-list'),
+    path('doctors/', views.DoctorList.as_view(), name='doctor-list'),
+    path('patients/', views.PatientList.as_view(), name='patient-list'),
+    path('appointment/', views.AppointmentList.as_view(), name='appointment-list')
 ]

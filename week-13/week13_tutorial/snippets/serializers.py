@@ -1,11 +1,15 @@
 from rest_framework import serializers
-from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
-
+from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES, SnippetCategory
 
 class SnippetSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=SnippetCategory.objects.all()
+    )
+
     class Meta:
         model = Snippet
-        fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
+        fields = ['id', 'title', 'code', 'linenos', 'language', 'style', 'category']
+
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(required=False, allow_blank=True, max_length=100)
     code = serializers.CharField()
@@ -30,3 +34,27 @@ class SnippetSerializer(serializers.ModelSerializer):
         instance.style = validated_data.get('style', instance.style)
         instance.save()
         return instance
+    
+     # Field-level validation
+    def validate_linenos(self, value):
+        """
+        Check that line number cannot be negative.
+        """
+        if value and value < 0:
+            raise serializers.ValidationError("Line number cannot be negative")
+        return value
+    
+    # Serializer-level validation
+    def validate(self, data):
+        """
+        Check that if the language is Python the snippet's title must contains 'django'
+        """
+        if data['language'] == 'python' and 'django' not in data['title'].lower():
+            raise serializers.ValidationError("For Python, snippets must be about Django")
+        return data
+    
+class SnippetCategorySerializer(serializers.ModelSerializer):
+    snippet_set = SnippetSerializer(many=True, read_only=True)
+    class Meta:
+        model = SnippetCategory
+        fields = ['id', 'name', 'snippet_set']
