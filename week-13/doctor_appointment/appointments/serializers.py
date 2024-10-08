@@ -64,6 +64,15 @@ class AppointmentPostSerializer(serializers.ModelSerializer):
             "details"
         ]
 
+    def update(self, instance, validated_data):
+        instance.doctor = validated_data.get('doctor', instance.doctor)
+        instance.patient = validated_data.get('patient', instance.patient)
+        instance.date = validated_data.get('date', instance.date)
+        instance.at_time = validated_data.get('at_time', instance.at_time)
+        instance.details = validated_data.get('details', instance.details)
+        instance.save()
+        return instance
+
     def validate(self, data):
         appointment_datetime = datetime.combine(data['date'], data['at_time'])
         if appointment_datetime < datetime.now():
