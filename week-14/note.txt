@@ -1,0 +1,4 @@
+What is JSON Web Token?
+เป็น token ที่สามารถแนบข้อมูลไปด้วยได้
+
+iss (issuer) คนที่ออก token
